@@ -1,11 +1,10 @@
-#Importing Pytube library
-import pytube
-import openai
-import whisper
-from pydub import AudioSegment
-from gtts import gTTS
+import pytube # Used for downloading Youtube of videos
+import openai # Used for text genertion task (here it is used for translation of original audio transcript into target language)
+import whisper # Used for generating transcript of user specified audio/video
+from pydub import AudioSegment # Used for manipulating Audio Files like (adding silence, trimming audio, speeding up audio)
+from gtts import gTTS # Used for text-speech purposes in various languages
 import re
-
+from ... import config
 
 class MultiAudio:
 
@@ -113,7 +112,7 @@ class MultiAudio:
 
     def __init__(self):
 
-        openai.api_key = "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"
+        openai.api_key = config.OPENAI_API_KEY
 
         self.video_time_length = 0
 
@@ -190,11 +189,10 @@ class MultiAudio:
 
                 seg_audio = gTTS(text=text, lang=target_lang)
 
-                seg_audio.save(f"./NA1APP/static/res/audios/{no}.mp3")
-
+                seg_audio.save(f"./MuladioApp/static/res/audios/{no}.mp3")
 
                 # Load the audio file
-                audio = AudioSegment.from_file(f"./NA1APP/static/res/audios/{no}.mp3")
+                audio = AudioSegment.from_file(f"./MuladioApp/static/res/audios/{no}.mp3")
 
                 if prev_segment_end != start:
 
@@ -260,6 +258,8 @@ class MultiAudio:
 
             language = next(key for key, val in MultiAudio.LANGUAGES.items() if target_lang.lower() == val)
 
+            print(language)
+
         except:
 
             return "Invalid Language."
@@ -277,7 +277,7 @@ class MultiAudio:
 
             translatedTranscriptAudio = self.textToSpeech(translatedTranscriptText,language)
 
-            translatedTranscriptAudio.export("./NA1APP/static/res/audios/target/translated_audio.mp3", format="mp3")
+            translatedTranscriptAudio.export("./MuladioApp/static/res/audios/target/translated_audio.mp3", format="mp3")
 
             return translatedTranscriptAudio.duration_seconds, video_id
         
