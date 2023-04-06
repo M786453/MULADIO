@@ -1,0 +1,62 @@
+
+
+body{   
+    text-align: center;
+    background: #263143;
+    color: gray;
+    font-family: sans-serif;
+}
+
+.content{
+    background: #313f55;
+    border-radius: 10px;
+    margin-top: 10px;
+    padding: 40px;
+    margin-left: 25px;
+    width: 90%;
+    height: 90%;
+}
+ 
+input
+{
+    background: #263143;
+    padding: 5px;
+    font-size: medium;
+    width: 250px;
+    color: gray
+    
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    background: #263143;
+}
+
+
+
+#submit-btn{
+    background: #263143;
+    padding: 5px;
+    width: 265px;
+    font-size: medium;
+    color: gray;
+}
+
+
+
+#parent-player-close div{
+    border: gray solid 2px;
+    padding: 2px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    width: 20px;
+    height: 20px;
+    background: #263143;
+}
+
+
+
+
+
+
