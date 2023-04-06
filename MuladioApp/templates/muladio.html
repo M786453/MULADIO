@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MULADIO</title>
+    <script src="https://www.youtube.com/player_api"></script>
+    <link rel="stylesheet" href="../static/style/style.css">
+    <script src="../static/scripts/script.js"></script>
+</head>
+<body>
+   
+    <div>
+
+      <h1>MULADIO</h1>
+
+      <div class="content">
+      
+        <div id="form_div">
+          
+          
+          <input type="text" id="url-input" name="url-input" placeholder="Enter Youtube Video URL">
+          
+          <br><br>
+          
+          <input type="text" id="lang" name="lang" placeholder="Enter Language">
+          
+          <br><br>
+          
+          <button  id="submit-btn">CONVERT</button>
+        
+        </div>
+        
+        <div id="parent-player" hidden>
+          
+            <div id="parent-player-close" align="center">
+                <div>X</div>
+            </div>
+          
+            <div id="player" style="height: 350px;width: 700px;" ></div>
+            
+            <audio id='audio'>
+              Your browser does not support the audio element.
+            </audio>
+        </div>
+    
+      </div>
+    
+  </div>
+
+</body>
+</html>
