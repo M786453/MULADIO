@@ -1,3 +1,7 @@
+body{
+    margin: 0px;
+    padding: 0px;
+}
 
 
 body{   
@@ -5,16 +9,22 @@ body{
     background: #263143;
     color: gray;
     font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
+
+
 .content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background: #313f55;
     border-radius: 10px;
-    margin-top: 10px;
-    padding: 40px;
-    margin-left: 25px;
-    width: 90%;
-    height: 90%;
+    width: 700px;
+    height: 400px;
 }
  
 input
@@ -27,11 +37,6 @@ input
     
 }
 
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
-    background: #263143;
-}
 
 
 
