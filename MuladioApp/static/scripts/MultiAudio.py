@@ -147,13 +147,13 @@ class MultiAudio:
 
 
 
-    def translateTranscriptText(self,transcript_text):
+    def translateTranscriptText(self,transcript_text, target_language):
         # Translating transcript into urdu
         chat_completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-                {"role": "system", "content": "You are a helpful translating assistant for translating user messages into Urdu."},
-                {"role":"assistant", "content": "Translate given text into Urdu.\nText:" + transcript_text}
+                {"role": "system", "content": f"You are a helpful translating assistant for translating user messages into {target_language}."},
+                {"role":"assistant", "content": f"Translate given text into {target_language}.\nText:\n" + transcript_text}
                 
             ]
         )
@@ -272,7 +272,7 @@ class MultiAudio:
 
             combinedTranscriptText = self.combineTranscriptText(transcriptOfAudio)
 
-            translatedTranscriptText = self.translateTranscriptText(combinedTranscriptText)
+            translatedTranscriptText = self.translateTranscriptText(combinedTranscriptText, language)
             
 
             translatedTranscriptAudio = self.textToSpeech(translatedTranscriptText,language)

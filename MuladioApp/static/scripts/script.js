@@ -1,5 +1,8 @@
 
+var player = null;
+
 window.onload = function(){
+
 
 
 const submitBtn = document.getElementById('submit-btn');
@@ -13,6 +16,10 @@ closePlayer.addEventListener('click', () => {
     document.getElementById('parent-player').style.display = 'none';
 
     document.getElementById('form_div').style.display = 'block';
+
+    if(player != null){
+        player.destroy();
+    }
 
 });
 
@@ -91,7 +98,7 @@ function setupYtPlayer(id, audio_length){
 
         audio.src = "../static/res/audios/target/translated_audio.mp3"
 
-        var player = new YT.Player('player', {
+        player = new YT.Player('player', {
                 height: '100%',
                 width: '100%',
                 videoId: id
