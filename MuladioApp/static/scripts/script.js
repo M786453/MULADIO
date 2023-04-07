@@ -13,6 +13,15 @@ console.log(document);
 
 closePlayer.addEventListener('click', () => {
 
+    
+    const url = `http://127.0.0.1:8000/clean`;
+
+    const xhr = new XMLHttpRequest();
+        
+    xhr.open('GET', url,true);
+
+    xhr.send();
+
     document.getElementById('parent-player').style.display = 'none';
 
     document.getElementById('form_div').style.display = 'block';

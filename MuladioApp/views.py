@@ -3,10 +3,13 @@ from django.http import HttpResponse
 from django.template import loader
 from .static.scripts.MultiAudio import MultiAudio
 import json
+import os
 # Create your views here.
 def muladio(request):
     template = loader.get_template("muladio.html")
     return HttpResponse(template.render())
+
+
 
 def generate(request):
 
@@ -55,5 +58,48 @@ def generate(request):
     except Exception as e:
         print(e)
         return HttpResponse("Error Occured.")
+
+
+def clean(request):
+    
+    audio_directory_path = "./MuladioApp/static/res/audios"
+
+    translated_audio_path = "./MuladioApp/static/res/audios/target/translated_audio.mp3"
+
+
+    # Removing translated file
+    try:
+
+        if os.path.isfile(translated_audio_path):
+
+            os.remove(translated_audio_path)
+    
+    except:
+
+        return HttpResponse("Error removing translated file.")
+
+    # Removing original and segment audios
+    for filename in os.listdir(audio_directory_path):
+
+        try:
+            
+            file_path = os.path.join(audio_directory_path, filename)
+
+            if os.path.isfile(file_path):
+
+                os.remove(file_path)
+
+                print(f"File '{filename}' removed successfuly")
+            
+        except:
+
+            return HttpResponse("Error removing file.")
+    
+    return HttpResponse("Cleaned successfuly.")
+
+    
+
+
+
 
 
