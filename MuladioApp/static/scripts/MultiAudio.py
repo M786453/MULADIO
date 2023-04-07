@@ -122,7 +122,7 @@ class MultiAudio:
         # Downloading audio of youtube video in the form of a file
         video = pytube.YouTube(url)
         audio = video.streams.get_audio_only()
-        audioFilePath = audio.download()
+        audioFilePath = audio.download('./MuladioApp/static/res/audios/','original.mp4')
         self.video_time_length = video.length
         return audioFilePath
     
