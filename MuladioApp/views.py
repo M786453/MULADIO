@@ -31,9 +31,9 @@ def generate(request):
             
             # If type of output is str, it means it is error description
 
-            if output == "Invalid Language.":
+            if output == "Invalid/Unsupported Language.":
 
-                return HttpResponse("Invalid Language.")
+                return HttpResponse("Invalid/Unsupported Language.")
             
             elif output == "Invalid Youtube Video URL.":
 

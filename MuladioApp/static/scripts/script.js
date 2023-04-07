@@ -68,8 +68,8 @@ submitBtn.addEventListener('click', () => {
                     alert("URL/LANG FIELD EMPTY.");
                 }else if(this.responseText === "Invalid Youtube Video URL."){
                     alert("Invalid Youtube Video URL.");
-                }else if(this.responseText === "Invalid Language."){
-                    alert("Invalid Language.");
+                }else if(this.responseText === "Invalid/Unsupported Language."){
+                    alert("Invalid/Unsupported Language.");
                 }else{
                     var jsonData = JSON.parse(this.responseText);         
                     setupYtPlayer(jsonData['video_id'], jsonData['audio_length']);
