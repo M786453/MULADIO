@@ -12,15 +12,25 @@ MULADIO is a web application built using Python Django that enables users to wat
 Following are the prerequisite APIs and libraries for MULADIO:
 
 * Openai's Whisper
-        pip install git+https://github.com/openai/whisper.git 
+        
+                pip install git+https://github.com/openai/whisper.git
+
 * Openai's Chat Completion API
-        pip install openai
+        
+                pip install openai
+
 * Pytube
-        pip install pytube
+        
+                pip install pytube
+
 * Pydub
-        pip install pydub
+                
+                pip install pydub
+
 * GTTS
-        pip install gtts
+                
+                pip install gtts
+                
 
 ## Development
 
