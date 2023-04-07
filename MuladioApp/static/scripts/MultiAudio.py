@@ -15,8 +15,9 @@ class MultiAudio:
 
         openai.api_key = config.OPENAI_API_KEY
 
-        self.video_time_length = 0
+        self.t_lang = ""
 
+        self.video_time_length = 0
 
 
     def downloadAudio(self, url):
@@ -27,75 +28,52 @@ class MultiAudio:
         self.video_time_length = video.length
         return audioFilePath
     
-
-
     def transcribeAudio(self,audioFilePath):
         # Transcribing Audio File
         model = whisper.load_model("tiny")
         transcript = model.transcribe(audioFilePath,word_timestamps=True)
         return transcript
 
+    def translateSegText(self, segment_text):
 
-    def combineTranscriptText(self,transcript):
-        # Combining transcript text alongwith timestamps
-        transcript_segments = transcript['segments']
-        transcript_text = ""
-        for segment in transcript_segments:
-            transcript_text += segment['text'] + "[" + str(segment['start']) + ":" + str(segment['end']) + ']'
-        
-        print(transcript_text)
-        return transcript_text
-
-
-
-    def translateTranscriptText(self,transcript_text, target_language):
-        # Translating transcript into urdu
         chat_completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-                {"role": "system", "content": f"You are a helpful translating assistant for translating user messages into {target_language}."},
-                {"role":"assistant", "content": f"Translate given text into {target_language}.\nText:\n" + transcript_text}
+                {"role": "system", "content": f"You are a helpful translating assistant for translating user messages into {self.t_lang}."},
+                {"role":"assistant", "content": f"Translate given text into {self.t_lang}.\nText:\n" + segment_text}
                 
             ]
         )
+
         translated_text = chat_completion['choices'][0]['message']['content']
 
         return translated_text
 
+    def textToSpeech(self,transcript):
 
-
-    def textToSpeech(self,translated_text, target_lang):
-        # Converting translated text into audio
-        # Also filling the silence gaps in transalted audio which are present in original audio
-
-        translated_text_segments = translated_text.split("]")
-
-        print(translated_text)
-
-        print("target language:", target_lang)
+        transcript_segments = transcript['segments']
 
         prev_segment_end = 0.0
 
         full_audio = AudioSegment.silent(duration=0.0)
 
-        for no, segment in enumerate(translated_text_segments):
+        for no, segment in enumerate(transcript_segments):
 
-            try:
+          start = segment['start']
 
-                text, time = segment.split("[")
+          end = segment['end']
 
-                start, end = time.split(":")
+          seg_text = segment['text']
 
-                start, end = float(start), float(end)
+          transalted_text = self.translateSegText(seg_text)
 
-                seg_audio = gTTS(text=text, lang=target_lang)
+          seg_audio = gTTS(text=transalted_text, lang=self.t_lang)
 
-                seg_audio.save(f"./MuladioApp/static/res/audios/{no}.mp3")
+          seg_audio.save(f"./MuladioApp/static/res/audios/{no}.mp3")
 
-                # Load the audio file
-                audio = AudioSegment.from_file(f"./MuladioApp/static/res/audios/{no}.mp3")
+          audio = AudioSegment.from_file(f"./MuladioApp/static/res/audios/{no}.mp3")
 
-                if prev_segment_end != start:
+          if prev_segment_end != start:
 
                     # Define the length of silence to add in milliseconds
                     silence_duration = (start - prev_segment_end) * 1000
@@ -108,16 +86,13 @@ class MultiAudio:
 
                     full_audio += audio_with_silence
 
-                else:
+          else:
 
                     full_audio += audio
+          
+          prev_segment_end = end
 
-                prev_segment_end = end
-                
-            except Exception as e:
-                print(e)
-
-
+        
         if prev_segment_end != self.video_time_length:
 
             # Define the length of silence to add in milliseconds
@@ -149,7 +124,6 @@ class MultiAudio:
        
         # Generate audio of youtube video in target language
 
-
         video_id = self.get_youtube_video_id(url)
             
         if video_id == None:
@@ -157,9 +131,7 @@ class MultiAudio:
 
         try:
 
-            language = next(key for key, val in MultiAudio.LANGUAGES.items() if target_lang.lower() == val)
-
-            print(language)
+           self.t_lang = next(key for key, val in MultiAudio.LANGUAGES.items() if target_lang.lower() == val.lower())
 
         except:
 
@@ -167,22 +139,19 @@ class MultiAudio:
         
 
         try:
+
             audioFilePath = self.downloadAudio(url)
 
             transcriptOfAudio = self.transcribeAudio(audioFilePath)
-
-            combinedTranscriptText = self.combineTranscriptText(transcriptOfAudio)
-
-            translatedTranscriptText = self.translateTranscriptText(combinedTranscriptText, language)
             
-
-            translatedTranscriptAudio = self.textToSpeech(translatedTranscriptText,language)
+            translatedTranscriptAudio = self.textToSpeech(transcriptOfAudio)
 
             translatedTranscriptAudio.export("./MuladioApp/static/res/audios/target/translated_audio.mp3", format="mp3")
 
             return translatedTranscriptAudio.duration_seconds, video_id
         
         except Exception as e:
+            
             print(e)
             return "Error Occurred."
 
