@@ -34,8 +34,6 @@ Following are the prerequisite APIs and libraries for MULADIO:
 
 ## Development
 
-MULADIO's core functionality is based on Openai's Whisper, Chat Completion API and Google's GTTS(Google Text to Speech) library. Whisper API is used for transcribing Youtube Video's audio. Openai's Chat Completion API 
-used for translating the transcript. GTTS library is used for generating speechs from text in any language. Few additional libraries are also used like Pytube is used for downloading Youtube Video's audio. Pydub is used
-for manipulating audio files like combining, triming, silencing or speeding up audios. 
+MULADIO's primary features rely on cutting-edge technologies such as Openai's Whisper, Google's GTTS library, and Openai's Chat Completion API. Whisper is utilized to transcribe the audio of YouTube videos, while Chat Completion API is used to translate the transcript. GTTS library is leveraged to convert text into speech in any language. Additionally, Pytube library is used to download YouTube videos' audio, and Pydub is used to manipulate audio files, such as combining, trimming, silencing, or speeding up audios. 
 
 
