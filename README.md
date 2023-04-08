@@ -4,36 +4,78 @@ MULADIO is a web application built using Python Django that enables users to wat
 
 ## Table of Contents
 
-- [Prerequisite](#Prerequisite)
 - [Development](#Development)
-
-## Prerequisite
-
-Following are the prerequisite APIs and libraries for MULADIO:
-
-* Openai's Whisper
-        
-                pip install git+https://github.com/openai/whisper.git
-
-* Openai's Chat Completion API
-        
-                pip install openai
-
-* Pytube
-        
-                pip install pytube
-
-* Pydub
-                
-                pip install pydub
-
-* GTTS
-                
-                pip install gtts
-                
+- [Environment](#Environment%20Setup)
+    - [Virtual Environment](#Virtual%20Environment)
+    - [Prerequisites](#Prerequisites)
+    - [Running on Localhost](#Running%20on%20Localhost)
 
 ## Development
 
 MULADIO's primary features rely on cutting-edge technologies such as Openai's Whisper, Google's GTTS library, and Openai's Chat Completion API. Whisper is utilized to transcribe the audio of YouTube videos, while Chat Completion API is used to translate the transcript. GTTS library is leveraged to convert text into speech in any language. Additionally, Pytube library is used to download YouTube videos' audio, and Pydub is used to manipulate audio files, such as combining, trimming, silencing, or speeding up audios. 
 
+## Environment Setup
 
+Following is the complete procedure to setup and run this project on your local environment.
+
+### Virtual Environment
+
+Create a virtual environment:
+
+Windows:
+
+            py -m venv MULADIO-VENV
+            
+Linux:
+
+            python -m venv MULADIO-VENV 
+           
+Activate environment:
+
+Windows/Linux:
+
+Run `activate` executable in order to activate virtual environment.
+
+            ./MULADIO-VENV/Scripts/activate
+
+            
+            
+### Cloning MULADIO
+
+Clone MULADIO in recently created MULADIO-VENV directory.
+
+            git clone https://github.com/M786453/MULADIO.git
+
+
+### Prerequisites
+
+You should have following in your virtual environment:
+
+* Openai's Whisper
+        
+                py -m pip install git+https://github.com/openai/whisper.git
+Note: In order to run whisper, you must have `ffmpeg` installed and path of it's executable in environment variables.
+
+* Openai's API
+        
+                py -m pip install openai
+
+* Pytube
+        
+                py -m pip install pytube
+
+* Pydub
+                
+                py -m pip install pydub
+
+* GTTS
+                
+                py -m pip install gtts
+
+### Runing on Localhost
+
+Navigate in MULADIO project directory and run following command:
+
+        py manage.py runserver
+
+This will run MULADIO on localhost. Now you can access MULADIO using url given in your command line.
