@@ -5,18 +5,21 @@ MULADIO is a web application built using Python Django that enables users to wat
 ## Table of Contents
 
 - [Development](#Development)
-- [Environment Setup](<Environment Setup>)
-    - [Virtual Environment](<Virtual Environment>)
+- [Environment Setup](#environment-setup)
+    - [Virtual Environment](#virtual-environment)
+    - [Cloning MULADIO](#cloning-muladio)
     - [Prerequisites](Prerequisites)
-    - [Running on Localhost](<Running on Localhost>)
+    - [Running on Localhost](#Runing-on-Localhost)
 
 ## Development
 
 MULADIO's primary features rely on cutting-edge technologies such as Openai's Whisper, Google's GTTS library, and Openai's Chat Completion API. Whisper is utilized to transcribe the audio of YouTube videos, while Chat Completion API is used to translate the transcript. GTTS library is leveraged to convert text into speech in any language. Additionally, Pytube library is used to download YouTube videos' audio, and Pydub is used to manipulate audio files, such as combining, trimming, silencing, or speeding up audios. 
 
+
 ## Environment Setup
 
 Following is the complete procedure to setup and run this project on your local environment.
+
 
 ### Virtual Environment
 
