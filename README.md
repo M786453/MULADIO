@@ -5,10 +5,10 @@ MULADIO is a web application built using Python Django that enables users to wat
 ## Table of Contents
 
 - [Development](#Development)
-- [Environment](#Environment%20Setup)
-    - [Virtual Environment](#Virtual%20Environment)
+- [Environment Setup](<#Environment Setup>)
+    - [Virtual Environment](<#Virtual Environment>)
     - [Prerequisites](#Prerequisites)
-    - [Running on Localhost](#Running%20on%20Localhost)
+    - [Running on Localhost](<#Running on Localhost>)
 
 ## Development
 
