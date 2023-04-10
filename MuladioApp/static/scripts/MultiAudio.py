@@ -1,6 +1,5 @@
 import pytube # Used for downloading Youtube of videos
 import openai # Used for text genertion task (here it is used for translation of original audio transcript into target language)
-import whisper # Used for generating transcript of user specified audio/video
 from pydub import AudioSegment # Used for manipulating Audio Files like (adding silence, trimming audio, speeding up audio)
 from gtts import gTTS # Used for text-speech purposes in various languages
 from gtts.lang import tts_langs
@@ -11,6 +10,10 @@ class MultiAudio:
 
     LANGUAGES = tts_langs() # dictionary of languages supported by gtts alongwith language codes
 
+    AUDIOS_DIRECTORY_PATH = "./MuladioApp/static/res/audios/"
+
+    OUTPUT_AUDIO_PATH = AUDIOS_DIRECTORY_PATH + "target/translated_audio.mp3"
+
     def __init__(self):
 
         openai.api_key = config.OPENAI_API_KEY
@@ -20,27 +23,63 @@ class MultiAudio:
         self.video_time_length = 0
 
 
+
     def downloadAudio(self, url):
         # Downloading audio of youtube video in the form of a file
         video = pytube.YouTube(url)
         audio = video.streams.get_audio_only()
-        audioFilePath = audio.download('./MuladioApp/static/res/audios/','original.mp4')
+        audioFilePath = audio.download(self.AUDIOS_DIRECTORY_PATH,'original.mp4')
         self.video_time_length = video.length
         return audioFilePath
-    
+
+
+
     def transcribeAudio(self,audioFilePath):
         # Transcribing Audio File
-        model = whisper.load_model("tiny")
-        transcript = model.transcribe(audioFilePath,word_timestamps=True)
+        audioFile = open(audioFilePath, 'rb')
+        transcript = openai.Audio.translate('whisper-1', audioFile,response_format='srt')
         return transcript
 
-    def translateSegText(self, segment_text):
 
+
+    def combineTranscriptText(self, transcript):
+
+      # Splitting srt file into segments of texts
+      segments_raw = transcript.split('\n\n')
+
+      # Storing time and text of each segment
+      transcript_segments = [segment.split('\n')[1:] for segment in segments_raw if len(segment.split('\n'))==3]
+
+      combined_text = ""
+
+      # Combining text and timestamps of each segment together
+      for segment in transcript_segments:
+
+          seg_text = segment[1]
+
+          timestamp = segment[0]
+
+          start, end = timestamp.split(' --> ')
+
+          start = self.time_to_seconds(start)
+
+          end = self.time_to_seconds(end)
+          
+          combined_text += seg_text + " [" + str(start) + ":" + str(end) + '] '
+
+
+      return combined_text
+
+
+    def chatGptTranslate(self, text):
+        #translate text into user specified language using Chatgpt
+        #It is slower than text-davinci-003 but results are quite better.
+        #It's api cost is quite less than text-davinci-003 model
         chat_completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
                 {"role": "system", "content": f"You are a helpful translating assistant for translating user messages into {self.t_lang}."},
-                {"role":"assistant", "content": f"Translate given text into {self.t_lang}.\nText:\n" + segment_text}
+                {"role":"assistant", "content": f"Translate given text into {self.t_lang}.\nText:\n" + text}
                 
             ]
         )
@@ -48,51 +87,80 @@ class MultiAudio:
         translated_text = chat_completion['choices'][0]['message']['content']
 
         return translated_text
+    
+    def devinciTranslate(self, text):
+      #translate text into user specified language using GPT-3 text-davinci-003 Model
+      #It is faster than chatgpt completion but results are not good than chatgpt
+      #It's api cost is quite more than chatgpt
+      response = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=f"Translate following text into {self.t_lang} and do not repeat translation:\n{text}\nTranslation:\n",
+        temperature=0,
+        max_tokens=2035,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+      )
 
-    def textToSpeech(self,transcript):
+      return response['choices'][0]['text']
 
-        transcript_segments = transcript['segments']
 
+    def textToSpeech(self,translated_text):
+
+        translated_text_segments = translated_text.split("]")
+        
         prev_segment_end = 0.0
 
         full_audio = AudioSegment.silent(duration=0.0)
 
-        for no, segment in enumerate(transcript_segments):
+        # Converting each segment's text into speech
+        # Combining each segment's speech with full_audio in order to get complete audio
+        for no, segment in enumerate(translated_text_segments):
 
-          start = segment['start']
+            try:
+                text, time = segment.split("[")
 
-          end = segment['end']
+                start, end = time.split(":")
 
-          seg_text = segment['text']
+                start, end = float(start), float(end)
 
-          transalted_text = self.translateSegText(seg_text)
+                print("start", start, "end", end)
 
-          seg_audio = gTTS(text=transalted_text, lang=self.t_lang)
+                seg_audio = gTTS(text=text, lang=self.t_lang)
 
-          seg_audio.save(f"./MuladioApp/static/res/audios/{no}.mp3")
+                seg_audio.save( self.AUDIOS_DIRECTORY_PATH + f"{no}.mp3")
 
-          audio = AudioSegment.from_file(f"./MuladioApp/static/res/audios/{no}.mp3")
+                audio = AudioSegment.from_file(self.AUDIOS_DIRECTORY_PATH + f"{no}.mp3")
 
-          if prev_segment_end != start:
+                print(audio.duration_seconds)
 
-                    # Define the length of silence to add in milliseconds
-                    silence_duration = (start - prev_segment_end) * 1000
+                #If there is any gap between end of previous segment and start of current segment
+                #then create a silence segment and add it in start of current segment's audio 
+                #and combine it with full_audio
+                if prev_segment_end != start:
 
-                    # Generate a silent audio segment of the desired duration
-                    silence_segment = AudioSegment.silent(duration=silence_duration)
+                          # Define the length of silence to add in milliseconds
+                          silence_duration = (start - prev_segment_end) * 1000
+                          print("silence duration",silence_duration)
+                          # Generate a silent audio segment of the desired duration
+                          silence_segment = AudioSegment.silent(duration=silence_duration)
 
-                    # Concatenate the silent segment to the beginning of the audio file
-                    audio_with_silence = silence_segment + audio
+                          # Concatenate the silent segment to the beginning of the audio file
+                          audio_with_silence = silence_segment + audio
 
-                    full_audio += audio_with_silence
+                          full_audio += audio_with_silence
 
-          else:
+                else:
 
-                    full_audio += audio
-          
-          prev_segment_end = end
+                          full_audio += audio
+                
+                prev_segment_end = end
 
-        
+            except Exception as e:
+
+              print(e)
+
+        # If 
         if prev_segment_end != self.video_time_length:
 
             # Define the length of silence to add in milliseconds
@@ -106,6 +174,20 @@ class MultiAudio:
         
 
         return full_audio
+
+    def time_to_seconds(self,time_str):
+        # Split the time string into hours, minutes, seconds, and milliseconds
+        parts = time_str.split(':')
+        seconds_parts = parts[2].split(',')
+        hours = int(parts[0])
+        minutes = int(parts[1])
+        seconds = int(seconds_parts[0])
+        milliseconds = int(seconds_parts[1])
+        
+        # Convert the time to seconds
+        total_seconds = (hours * 3600) + (minutes * 60) + seconds + (milliseconds / 1000)
+        
+        return total_seconds
 
     def get_youtube_video_id(self, url):
         # regular expression pattern for extracting the video ID from a YouTube video URL
@@ -143,10 +225,18 @@ class MultiAudio:
             audioFilePath = self.downloadAudio(url)
 
             transcriptOfAudio = self.transcribeAudio(audioFilePath)
-            
-            translatedTranscriptAudio = self.textToSpeech(transcriptOfAudio)
 
-            translatedTranscriptAudio.export("./MuladioApp/static/res/audios/target/translated_audio.mp3", format="mp3")
+            combinedTextWithTimestamps = self.combineTranscriptText(transcriptOfAudio)
+
+            # translatedText = self.devinciTranslate(combinedTextWithTimestamps)
+
+            translatedText = self.chatGptTranslate(combinedTextWithTimestamps)
+
+            print(translatedText)
+
+            translatedTranscriptAudio = self.textToSpeech(translatedText)
+
+            translatedTranscriptAudio.export(self.OUTPUT_AUDIO_PATH, format="mp3")
 
             return translatedTranscriptAudio.duration_seconds, video_id
         
