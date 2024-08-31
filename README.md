@@ -20,6 +20,9 @@ MULADIO's primary features rely on cutting-edge technologies such as Openai's Wh
 
 Following is the complete procedure to setup and run this project on your local environment.
 
+### Cloning MULADIO
+
+    git clone https://github.com/M786453/MULADIO.git
 
 ### Virtual Environment
 
@@ -27,53 +30,27 @@ Create a virtual environment:
 
 Windows:
 
-            py -m venv MULADIO-VENV
+    py -m venv MULADIO-VENV
             
 Linux:
 
-            python -m venv MULADIO-VENV 
+    python -m venv MULADIO-VENV 
            
 Activate environment:
 
-Windows/Linux:
+Windows:
 
-Run `activate` executable in order to activate virtual environment.
+    ./MULADIO-VENV/Scripts/activate
 
-            ./MULADIO-VENV/Scripts/activate
+Linux:
 
-            
-            
-### Cloning MULADIO
-
-Clone MULADIO in recently created MULADIO-VENV directory.
-
-            git clone https://github.com/M786453/MULADIO.git
-
+    source /MULADIO-VENV/bin/activate
 
 ### Prerequisites
 
-You should have following in your virtual environment:
+Install dependencies using following command:
 
-* Openai's Whisper
-        
-                py -m pip install git+https://github.com/openai/whisper.git
-Note: In order to run whisper, you must have `ffmpeg` installed and path of it's executable in environment variables.
-
-* Openai's API
-        
-                py -m pip install openai
-
-* Pytube
-        
-                py -m pip install pytube
-
-* Pydub
-                
-                py -m pip install pydub
-
-* GTTS
-                
-                py -m pip install gtts
+    pip install -r requirements.txt
 
 ### Runing on Localhost
 
